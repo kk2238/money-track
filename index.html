@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MoneyTrack</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f5f5f5;margin:0}
+.app{max-width:430px;margin:auto;background:white;min-height:100vh;padding:24px;box-sizing:border-box}
+h1{margin-top:0}.box{background:#111;color:white;padding:24px;border-radius:20px}
+.bal{font-size:36px;font-weight:800}.stats{display:flex;gap:10px;margin:14px 0}
+.card{flex:1;background:#eee;padding:15px;border-radius:15px}
+button,input,select{width:100%;padding:14px;margin:7px 0;box-sizing:border-box;border-radius:12px;border:1px solid #ddd;font-size:16px}
+button{background:#111;color:white;border:0;font-weight:700}.form{display:none}
+.item{padding:13px 0;border-bottom:1px solid #eee}.in{color:green}.out{color:#c33}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>💰 MoneyTrack</h1>
+<div class="box">Balance<div class="bal" id="bal">¥0</div></div>
+
+<div class="stats">
+<div class="card">Income<br><b id="inc">¥0</b></div>
+<div class="card">Expense<br><b id="exp">¥0</b></div>
+</div>
+
+<button onclick="f.style.display='block'">＋ Add Transaction</button>
+
+<div class="form" id="f">
+<h2>Add Transaction</h2>
+<select id="type">
+<option value="expense">Expense</option>
+<option value="income">Income</option>
+</select>
+<input id="amt" type="number" placeholder="Amount ¥">
+<select id="cat">
+<option>Food 🍜</option>
+<option>Rent 🏠</option>
+<option>Transport 🚆</option>
+<option>Shopping 🛍️</option>
+<option>Investment 📈</option>
+<option>Other</option>
+</select>
+<input id="note" placeholder="Note">
+<button onclick="save()">SAVE</button>
+</div>
+
+<h2>Recent Transactions</h2>
+<div id="list">No transactions yet</div>
+</div>
+
+<script>
+let d=JSON.parse(localStorage.mt||'[]');
+const y=n=>'¥'+n.toLocaleString();
+
+function r(){
+let i=d.filter(x=>x.t=='income').reduce((a,x)=>a+x.a,0);
+let e=d.filter(x=>x.t=='expense').reduce((a,x)=>a+x.a,0);
+inc.textContent=y(i);
+exp.textContent=y(e);
+bal.textContent=y(i-e);
+list.innerHTML=d.length?d.slice().reverse().map(x=>
+`<div class=item><b>${x.c}</b> ${x.n||''}
+<span class=${x.t=='income'?'in':'out'}>
+${x.t=='income'?'+':'-'}${y(x.a)}</span></div>`
+).join(''):'No transactions yet'
+}
+
+function save(){
+let a=+amt.value;
+if(!a)return alert('Enter amount');
+d.push({t:type.value,a,c:cat.value,n:note.value});
+localStorage.mt=JSON.stringify(d);
+amt.value=note.value='';
+f.style.display='none';
+r()
+}
+r();
+</script>
+</body>
+</html>
